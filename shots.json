@@ -1,5 +1,6 @@
 [
-  { "file": "1-checklist.jpg", "path": "/", "viewport": { "width": 1280, "height": 800 } },
-  { "file": "2-silver.jpg", "path": "/", "grade": "silver", "viewport": { "width": 1280, "height": 800 } },
-  { "file": "3-bronze.jpg", "path": "/", "grade": "bronze", "scroll": 1400, "viewport": { "width": 1280, "height": 800 } }
+  { "file": "1-tracker-guide.jpg", "path": "/#tracker", "note": "13 of 55 earned, counters part way; Positive Mental Attitude open", "viewport": { "width": 1280, "height": 800 } },
+  { "file": "2-platinum-route.jpg", "path": "/#route", "note": "all six legs, all 55 trophies placed", "viewport": { "width": 1280, "height": 800 } },
+  { "file": "3-missables.jpg", "path": "/#missables", "note": "missable, watch list, rules, disputed items", "viewport": { "width": 1280, "height": 800 } },
+  { "file": "4-spoiler-filters.jpg", "path": "/#tracker", "note": "Story + Not earned with the spoiler shield on, filter sheet open (F)", "viewport": { "width": 1280, "height": 800 } }
 ]

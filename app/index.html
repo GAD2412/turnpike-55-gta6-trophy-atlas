@@ -3,23 +3,67 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GTA VI trophy checklist</title>
-<link rel="stylesheet" href="style.css">
+<title>Turnpike 55 · GTA VI trophy atlas</title>
+<meta name="description" content="Offline guide and tracker for the 55 PlayStation 5 trophies of Grand Theft Auto VI: cited guides, a six-leg platinum route, missables, spoiler shield, saved progress.">
+<link rel="stylesheet" href="css/atlas.css">
 </head>
 <body>
-<header>
-  <h1>GTA VI trophy checklist</h1>
-  <p id="progress">0 of 55 earned</p>
+<a class="skip" href="#guide">Skip to the open guide</a>
+
+<header class="top" id="top">
+  <div class="brand">
+    <svg class="shield" viewBox="0 0 40 44" aria-hidden="true"><path d="M20 2 4 8v12c0 11 7 18 16 22 9-4 16-11 16-22V8z"/><text x="20" y="29" text-anchor="middle">55</text></svg>
+    <div>
+      <h1>Turnpike 55</h1>
+      <p class="tag">GTA VI · PS5 trophy atlas</p>
+    </div>
+  </div>
+  <div class="odometer" id="odometer" aria-live="polite"></div>
+  <div class="controls">
+    <button type="button" class="spoiler" id="spoiler" aria-pressed="true" title="Spoiler shield (H)"></button>
+    <button type="button" id="export" title="Save your progress to a file (E)">Export</button>
+    <label class="btn" for="import" title="Load a progress file">Import<input id="import" type="file" accept="application/json,.json"></label>
+    <button type="button" id="print" title="Print the whole guide (P)">Print</button>
+    <span class="saved" id="saved" role="status"></span>
+  </div>
 </header>
-<div class="controls">
-  <label>Grade <select id="grade"><option value="all">All</option><option value="platinum">Platinum</option><option value="gold">Gold</option><option value="silver">Silver</option><option value="bronze">Bronze</option></select></label>
-  <button id="export" type="button">Export progress</button>
-  <label class="import">Import progress <input id="import" type="file" accept="application/json"></label>
-</div>
-<table>
-  <thead><tr><th>Earned</th><th>Trophy</th><th>Grade</th><th>How to get it</th></tr></thead>
-  <tbody id="rows"></tbody>
-</table>
-<script type="module" src="app.js"></script>
+
+<nav class="bar" aria-label="Views">
+  <div class="tabs" role="tablist">
+    <button type="button" role="tab" data-view="tracker">Tracker <kbd>T</kbd></button>
+    <button type="button" role="tab" data-view="route">Route <kbd>R</kbd></button>
+    <button type="button" role="tab" data-view="missables">Missables <kbd>M</kbd></button>
+    <button type="button" role="tab" data-view="sources">Sources <kbd>S</kbd></button>
+  </div>
+  <p class="audit" id="audit"></p>
+</nav>
+
+<div class="strip" id="strip" aria-label="Platinum route progress by leg"></div>
+
+<main id="views">
+  <section class="view tracker" data-view="tracker">
+    <div class="list-pane">
+      <div class="list-tools">
+        <label class="search"><span class="sr">Search trophies</span><input id="q" type="search" placeholder="Search name or step" autocomplete="off"><kbd>/</kbd></label>
+        <div class="quick" id="quick" role="group" aria-label="Quick filters"></div>
+        <p class="filter-state" id="filter-state"></p>
+      </div>
+      <ol class="list" id="list" aria-label="Trophies"></ol>
+    </div>
+    <article class="guide" id="guide" tabindex="-1" aria-live="polite"></article>
+    <aside class="rail" id="rail"></aside>
+  </section>
+  <section class="view route" data-view="route" id="route" hidden></section>
+  <section class="view missables" data-view="missables" id="missables" hidden></section>
+  <section class="view sources" data-view="sources" id="sources" hidden></section>
+</main>
+
+<dialog id="filters" aria-labelledby="filters-title"></dialog>
+<dialog id="help" aria-labelledby="help-title"></dialog>
+<section id="print-sheet" aria-hidden="true"></section>
+
+<footer class="foot">Unofficial fan guide, not affiliated with Rockstar Games or Sony. Trophy names, descriptions and grades as PlayStation publishes them; guides written for Turnpike 55 with their sources. Works offline; progress stays in this browser. Press <kbd>?</kbd> for keys.</footer>
+
+<script type="module" src="js/main.js"></script>
 </body>
 </html>
