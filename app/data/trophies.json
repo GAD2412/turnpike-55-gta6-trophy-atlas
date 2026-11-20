@@ -19,10 +19,10 @@
  ],
  "legs": [
   { "id": 1, "name": "Chapter 1", "place": "the Keys", "plan": "Story up to Discharge Time. Do Lucia's balcony meditation before the chapter ends, meet Cal and Kenton, start scanning every car you pass.", "save": "Manual save at the start and end of the chapter [1]" },
-  { "id": 2, "name": "Chapter 2", "place": "two leads", "plan": "Coffee Break lets Jason and Lucia roam together: partner crimes, gym sessions, Billy and Bret, the garage and Scooter Bros apps.", "save": "Save before Checking Out (Move to Vice City) [1][4]" },
-  { "id": 3, "name": "Chapter 3", "place": "Vice City", "plan": "Key Cloner, Snap Gun and Dye Pack Jammer open the crime trophies. Work Randy, Tyrone and Andy, hit the jewelry stores, finish strangers.", "save": "Save before The Cartel Heist [1][4]" },
-  { "id": 4, "name": "Chapters 4-5", "place": "the finale", "plan": "Play the optional That's Where The Money Is... to open bank vaults, then see the story out.", "save": "Save before the last mission: no replay [1]" },
-  { "id": 5, "name": "Free roam", "place": "the 100% list", "plan": "The checklist opens after the credits under Progress > Stats. Ranges, drones, races, stunts, cards, WAiNK, fog, gangs.", "save": "Rotate the spare save slots [1]" },
+  { "id": 2, "name": "Chapter 2", "place": "two leads", "plan": "Coffee Break lets both leads roam together: partner crimes, gyms, Billy, Bret, garages, Scooter Bros.", "save": "Save before Checking Out (Move to Vice City) [1][4]" },
+  { "id": 3, "name": "Chapter 3", "place": "Vice City", "plan": "Key Cloner, Snap Gun and Dye Pack Jammer open the crime trophies; Randy, Tyrone, Andy, strangers.", "save": "Save before The Cartel Heist [1][4]" },
+  { "id": 4, "name": "Chapters 4-5", "place": "finale", "plan": "Play the optional That's Where The Money Is... to open bank vaults, then see the story out.", "save": "Save before the last mission: no replay [1]" },
+  { "id": 5, "name": "Free roam", "place": "100% list", "plan": "The checklist opens after the credits under Progress > Stats. Ranges, drones, races, stunts, cards, WAiNK, fog, gangs.", "save": "Rotate the spare save slots [1]" },
   { "id": 6, "name": "Clean-up", "place": "oddities", "plan": "One-off stunts and secrets, the last big spend, then the platinum pops.", "save": "" }
  ],
  "trophies": [

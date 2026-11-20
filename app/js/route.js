@@ -35,7 +35,7 @@ export function renderRoute(el, ctx) {
   el.replaceChildren(
     h('header', { class: 'route-head' },
       h('h2', {}, 'Platinum route · 6 legs, all 55 trophies placed'),
-      h('p', {}, cited(ctx.data, 'One playthrough, about 200 hours, difficulty 4/10, no online trophies [1][7]. One trophy is potentially missable, in leg 1 [1][3]. There is no mission replay, so keep a manual save at the start and end of every chapter [1][4]. Cheats switch off trophies [1].'))),
+      h('p', {}, cited(ctx.data, 'One playthrough, about 200 h, difficulty 4/10, no online trophies [1][7]. One potentially missable, in leg 1 [1][3]. No mission replay: save at each chapter’s start and end [1][4]. Cheats block trophies [1].'))),
     h('ol', { class: 'legs' }, ctx.data.legs.map((leg) => {
       const { all, done } = legStats(ctx, leg);
       return h('li', { class: `leg${leg.id === here.id ? ' is-here' : ''}` },
