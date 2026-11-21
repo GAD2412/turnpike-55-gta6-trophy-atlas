@@ -19,7 +19,13 @@ export function sourceById(data, id) {
 
 export function citeChip(data, id) {
   const s = sourceById(data, id);
-  return h('a', { class: 'cite', href: `#src-${id}`, title: s ? `${s.site}: ${s.title} (${dateLabel(s.published)}, read ${dateLabel(s.read)})` : `Source ${id}` }, String(id));
+  return h('a', { class: 'cite', href: `#src-${id}`, title: s ? `${s.site}: ${s.title} (${sourceDate(s)}, read ${dateLabel(s.read)})` : `Source ${id}` }, String(id));
+}
+
+// "18 Nov 2026", or "updated 20 Nov 2026" for a page that shows only an update date.
+export function sourceDate(s) {
+  if (!/^\d{4}/.test(s.published) && s.updated) return `updated ${dateLabel(s.updated)}`;
+  return s.updated ? `${dateLabel(s.published)}, upd. ${dateLabel(s.updated)}` : dateLabel(s.published);
 }
 
 // Text with [n] markers becomes text with source chips; the marker numbers index data.sources.
@@ -43,6 +49,25 @@ export function citesIn(text) {
 export function trophySources(t) {
   const all = [t.guide, ...t.steps, t.differ ? `${t.differ.a} ${t.differ.b}` : ''].flatMap(citesIn);
   return [5, ...new Set(all.filter((n) => n !== 5))];
+}
+
+// A claim is one step of a guide. It is cited when it names a source, and on 2+ sites when the sources it names
+// come from two different sites (PowerPyx's sub-guides are one site, however many of them a step names).
+export function sitesIn(data, text) {
+  return new Set(citesIn(text).map((id) => sourceById(data, id)?.site).filter(Boolean));
+}
+
+export function claimStats(data, trophies) {
+  const steps = trophies.flatMap((t) => t.steps);
+  return {
+    steps: steps.length,
+    cited: steps.filter((s) => citesIn(s).length).length,
+    multi: steps.filter((s) => sitesIn(data, s).size > 1).length,
+  };
+}
+
+export function claimsBacked(trophies, id) {
+  return trophies.flatMap((t) => t.steps).filter((s) => citesIn(s).includes(id)).length;
 }
 
 export function medal(grade) {

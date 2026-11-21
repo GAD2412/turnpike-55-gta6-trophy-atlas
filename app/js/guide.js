@@ -1,5 +1,5 @@
 // The open guide: official text, missable warning, counter, cited steps, source disagreements; and its source rail.
-import { h, medal, cited, trophySources, sourceById, dateLabel, money } from './dom.js';
+import { h, medal, cited, trophySources, sourceById, dateLabel, money, sourceDate, claimStats, claimsBacked } from './dom.js';
 import { KINDS, isMasked, sortTrophies } from './filters.js';
 
 function counter(t, ctx) {
@@ -20,10 +20,12 @@ function counter(t, ctx) {
 function missableBox(t, ctx) {
   if (t.missable === 'no') return null;
   return h('div', { class: 'missable', role: 'note' },
-    h('strong', {}, `Potentially missable · last chance: ${t.watch}`),
-    h('p', {}, cited(ctx.data, 'The balcony meditation in Chapter 1 cannot be repeated later, and whether the trophy needs it is unconfirmed. Do it, then keep a Chapter 1 save. [1][3][8]')));
+    h('strong', {}, 'Potentially missable'),
+    h('p', { class: 'miss-last' }, `Last chance: ${t.watch}`),
+    h('p', {}, cited(ctx.data, t.missNote)));
 }
 
+// Both readings side by side with their sources; stacked A over B when it sits beside a missable warning.
 function differBox(t, ctx) {
   if (!t.differ) return null;
   const d = t.differ;
@@ -33,6 +35,18 @@ function differBox(t, ctx) {
       h('p', {}, h('b', {}, 'A '), cited(ctx.data, d.a)),
       h('p', {}, h('b', {}, 'B '), cited(ctx.data, d.b))),
     h('p', { class: 'differ-call' }, h('b', {}, 'Our call: '), d.call));
+}
+
+function alerts(t, ctx) {
+  const miss = missableBox(t, ctx);
+  if (!miss) return null;
+  return h('div', { class: `alerts${t.differ ? ' has-differ' : ''}` }, miss, differBox(t, ctx));
+}
+
+function stepsHead(t, ctx) {
+  const s = claimStats(ctx.data, [t]);
+  return h('h3', { class: 'steps-head' }, 'How to earn it',
+    h('span', {}, `${s.steps} steps · ${s.cited} cited · `, h('b', {}, `${s.multi} on 2+ sites`)));
 }
 
 function maskedGuide(t, ctx) {
@@ -65,14 +79,14 @@ export function renderGuide(el, t, ctx) {
       h('h2', { id: 'guide-title' }, t.name),
       h('button', { type: 'button', class: `earn${earned ? ' is-on' : ''}`, 'aria-pressed': String(earned), onclick: () => ctx.toggle(t.id, !earned) }, earned ? 'Earned' : 'Mark earned', h('kbd', {}, 'X'))),
     h('p', { class: 'g-tags' },
-      h('span', { class: `g-grade t-${t.grade}` }, t.grade), ` · ${KINDS[t.kind]} · Leg ${t.leg}: ${leg.name}, ${leg.place} · opens ${t.opens} · #${t.id} of 55${t.hidden ? ' · hidden on PSN' : ''}`),
+      h('span', { class: `g-grade t-${t.grade}` }, t.grade), ` · ${KINDS[t.kind]} · Leg ${t.leg}: ${leg.name}, ${leg.place} · opens ${t.opens}${t.hidden ? ' · hidden on PSN' : ''}`),
     h('blockquote', { class: 'official' }, h('span', {}, 'Official description'), h('q', {}, t.description), cited(ctx.data, ' [5]')),
-    missableBox(t, ctx),
+    alerts(t, ctx),
     h('p', { class: 'g-short' }, h('b', {}, 'In short '), cited(ctx.data, t.guide)),
     t.count ? counter(t, ctx) : null,
-    h('h3', {}, `How to earn it · ${t.steps.length} steps, each cited`),
+    stepsHead(t, ctx),
     h('ol', { class: 'steps' }, t.steps.map((s) => h('li', {}, h('span', {}, cited(ctx.data, s))))),
-    differBox(t, ctx),
+    t.missable === 'no' ? differBox(t, ctx) : null,
   );
 }
 
@@ -82,15 +96,20 @@ function nextUp(ctx) {
 }
 
 export function renderRail(el, t, ctx) {
-  const ids = t && !isMasked(t, ctx.progress) ? trophySources(t) : [5];
+  const open = t && !isMasked(t, ctx.progress);
+  // The official list first, then the pages that back the most steps of this guide.
+  const backs = (id) => (open ? claimsBacked([t], id) : 0);
+  const ids = open ? [5, ...trophySources(t).slice(1).sort((a, b) => backs(b) - backs(a) || a - b)] : [5];
+  const sites = new Set(ids.map((id) => sourceById(ctx.data, id).site)).size;
+  const role = (id) => (id === 5 ? 'official text' : backs(id) ? `backs ${backs(id)} of ${t.steps.length} steps` : 'cited in summary or A/B');
   el.replaceChildren(
-    h('h3', {}, `Sources for this guide · ${ids.length}`),
+    h('h3', {}, `Sources · ${ids.length} pages, ${sites} sites`),
     h('ol', { class: 'src-list' }, ids.map((id) => {
       const s = sourceById(ctx.data, id);
       return h('li', {},
         h('span', { class: 'src-no' }, String(id)),
         h('a', { href: s.url, target: '_blank', rel: 'noopener noreferrer' }, h('b', {}, s.site), ` ${s.title}`),
-        h('span', { class: 'src-date' }, `${dateLabel(s.published)} · read ${dateLabel(s.read)}`));
+        h('span', { class: 'src-date' }, h('b', { class: 'src-backs' }, role(id)), ` · ${sourceDate(s)} · read ${dateLabel(s.read)}`));
     })),
     h('h3', {}, 'Next up on the route'),
     h('ol', { class: 'next-list' }, nextUp(ctx).map((n) => h('li', {},

@@ -250,6 +250,18 @@ main { min-height: 0; padding: 10px 18px 0; }
 .missable { margin: 0 0 10px; padding: 8px 12px; border: 1px solid var(--flare); background: rgba(255, 97, 83, 0.12); border-radius: var(--r); }
 .missable strong { color: var(--flare); font: 700 15.5px var(--display); }
 .missable p { margin: 3px 0 0; font-size: 14px; }
+.missable .miss-last { font: 700 14px var(--display); color: var(--salt); }
+/* The missable warning and the sources-differ box share one row, so both sit above the fold. */
+.alerts { margin: 0 0 10px; }
+.alerts.has-differ { display: grid; grid-template-columns: 1fr 1.25fr; gap: 8px; align-items: stretch; }
+.alerts .missable, .alerts .differ { margin: 0; padding: 7px 10px; }
+.alerts .differ strong { font-size: 14.5px; line-height: 1.15; display: block; }
+.alerts .differ-sides { grid-template-columns: 1fr; gap: 0; }
+.alerts .differ p, .alerts .missable p { font-size: 13.5px; line-height: 1.35; }
+.steps-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.steps-head span { font: 600 12.5px var(--sans); color: var(--fog); letter-spacing: 0; }
+.steps-head span b { color: var(--gulf); }
+.src-backs { color: var(--gulf); font-weight: 700; }
 .g-short { margin: 0 0 10px; font-size: 15px; line-height: 1.45; }
 .g-short b { color: var(--sign); font-family: var(--display); }
 .counter { display: grid; grid-template-columns: auto auto 76px auto 1fr; align-items: center; gap: 6px; margin: 0 0 12px; padding: 7px 10px; background: var(--sea); border: 1px solid var(--paint); border-radius: var(--r); }

@@ -1,5 +1,5 @@
 // Header odometer and audit line, the missables and sources views, the filter and help dialogs, the print sheet.
-import { h, medal, cited, dateLabel, trophySources } from './dom.js';
+import { h, medal, cited, dateLabel, trophySources, sourceDate, claimStats, claimsBacked } from './dom.js';
 import { KINDS, GRADES, FLAGS, SORTS, SPOILER_TEXT, QUICK, isMasked } from './filters.js';
 import { SPOILER_LEVELS } from './store.js';
 
@@ -21,14 +21,15 @@ export function renderOdometer(el, ctx) {
 export function renderAudit(el, ctx) {
   const { trophies, sources } = ctx.data;
   const count = (g) => trophies.filter((t) => t.grade === g).length;
-  const cited = trophies.filter((t) => trophySources(t).length > 1).length;
-  const reads = [...new Set(sources.map((s) => s.read))].map(dateLabel).join(', ');
+  const c = claimStats(ctx.data, trophies);
+  const reads = [...new Set(sources.map((s) => s.read))].sort();
+  const sites = new Set(sources.map((s) => s.site)).size;
   const items = [
     ['ok', `${trophies.length}/55 official name, text, grade`],
-    ['', `${count('platinum')}P ${count('gold')}G ${count('silver')}S ${count('bronze')}B`],
-    ['', `${trophies.filter((t) => t.hidden).length} hidden`],
-    ['ok', `${cited}/55 guides cited`],
-    ['', `${sources.length} sources read ${reads}`],
+    ['', `${count('platinum')}P ${count('gold')}G ${count('silver')}S ${count('bronze')}B · ${trophies.filter((t) => t.hidden).length} hidden`],
+    ['ok', `${c.cited}/${c.steps} claims cited`],
+    ['ok', `${c.multi}/${c.steps} on 2+ sites`],
+    ['', `${sources.length} pages · ${sites} sites · read ${dateLabel(reads[0]).split(' ')[0]}-${dateLabel(reads.at(-1))}`],
     ['warn', `${trophies.filter((t) => t.missable !== 'no').length} potentially missable`],
     ['diff', `${trophies.filter((t) => t.differ).length} sources differ`],
     ['', '0 online'],
@@ -37,19 +38,21 @@ export function renderAudit(el, ctx) {
 }
 
 const WATCH = [
-  ['Kenton goes quiet after Chapter 1 and texts Jason again in Chapters 2-3: his strand returns. [1]', 23],
-  ['Let’s Go Bowling: a valuable you miss respawns after a long wait. [1]', 46],
+  ['Strangers & Freaks: Game-Checklists says missing Race Against Yago (Chapter 3 hourglass) puts it at risk; PowerPyx and GTABase say every strand stays open. [1][19][21]', 25],
+  ['Kenton goes quiet after Chapter 1 and texts Jason again in Chapters 2-3: his strand returns. [1][19]', 23],
+  ['Let’s Go Bowling: a valuable you miss respawns after a long wait. [1][19]', 46],
   ['Stick Fiddler: the home TV is blocked in some story stretches and comes back. [1]', 21],
-  ['Optional missions with an hourglass fail over time; none of them feeds a trophy or the 100% list. [1][4]', 14],
-  ['Some fences and magazine spots disappear with the story; no trophy depends on them. [1]', 14],
+  ['Other hourglass missions fail over time; PowerPyx finds none that feeds a trophy or the 100% list. [1][4][19]', 14],
+  ['Some fences and magazine spots disappear with the story; no trophy depends on them. [1][19]', 14],
 ];
 const RULES = [
-  'No mission replay: 15 manual slots and 1 autosave. Keep a save at the start and end of each chapter. [1][4]',
-  'Cheats switch off trophies and saving. [1]',
-  'The Irredeemable criminal profile is permanent and makes police harsher: avoid it. [1]',
+  'No mission replay: 15 manual slots and 1 autosave. Keep a save at the start and end of each chapter. [1][12][19]',
+  'Chapter 1’s Tourist Trap wipes your cash: move $5,000 or more to Family Savings first. [19]',
+  'Cheats switch off trophies and saving. [1][12][19]',
+  'The Irredeemable criminal profile is permanent and makes police harsher: avoid it. [1][21]',
   'Whether Jason and Lucia get along does not affect any trophy. [1]',
-  'Character-locked strands: Andy is Lucia only; Tyrone and Bret are Jason only. [1]',
-  'Everything on the 100% list is still open after the story. [1][2]',
+  'Character-locked strands: Andy is Lucia only; Tyrone, Bret and Pilot Pete are Jason only. [1][19]',
+  'Everything on the 100% list is still open after the story. [1][2][16]',
 ];
 
 export function renderMissables(el, ctx) {
@@ -57,14 +60,17 @@ export function renderMissables(el, ctx) {
   el.replaceChildren(
     h('header', { class: 'route-head' },
       h('h2', {}, `Missables · ${risky.length} potentially missable, 0 confirmed`),
-      h('p', {}, cited(ctx.data, 'Built from the official descriptions and the guides that played it. Every other trophy stays open in free roam after the story. [1][2][10]'))),
+      h('p', {}, cited(ctx.data, 'Built from the official descriptions and the guides that played it. Every other trophy stays open in free roam after the story. [1][2][10][12][19]'))),
     h('div', { class: 'miss-grid' },
       h('section', { class: 'miss-main' }, risky.map((t) => h('article', { class: 'miss-card' },
         h('p', { class: 'miss-when' }, `Leg ${t.leg} · last chance: ${t.watch}`),
         h('h3', {}, medal(t.grade), t.name),
         h('q', {}, t.description),
         h('ol', { class: 'steps' }, t.steps.slice(0, 2).map((s) => h('li', {}, h('span', {}, cited(ctx.data, s))))),
-        t.differ ? h('p', { class: 'differ-call' }, h('b', {}, 'Unconfirmed: '), t.differ.q, ' ', h('b', {}, 'Our call: '), t.differ.call) : null,
+        t.differ ? h('div', { class: 'differ' },
+          h('strong', {}, `Sources differ: ${t.differ.q}`),
+          h('p', {}, h('b', {}, 'A '), cited(ctx.data, t.differ.a), ' ', h('b', {}, 'B '), cited(ctx.data, t.differ.b)),
+          h('p', { class: 'differ-call' }, h('b', {}, 'Our call: '), t.differ.call)) : null,
         h('button', { type: 'button', onclick: () => ctx.openTrophy(t.id) }, 'Open the full guide'))),
         h('h3', { class: 'differ-title' }, `Unconfirmed or disputed · ${ctx.data.trophies.filter((t) => t.differ).length}`),
         h('ul', { class: 'watch' }, ctx.data.trophies.filter((t) => t.differ).map((t) => h('li', {},
@@ -83,18 +89,21 @@ export function renderSources(el, ctx) {
   const { trophies, sources } = ctx.data;
   const usage = (id) => trophies.filter((t) => trophySources(t).includes(id)).length;
   const differs = trophies.filter((t) => t.differ);
+  const c = claimStats(ctx.data, trophies);
+  const sites = new Set(sources.map((s) => s.site)).size;
   el.replaceChildren(
     h('header', { class: 'route-head' },
-      h('h2', {}, `Sources · ${sources.length} pages, every one dated`),
-      h('p', {}, 'Each guide is written for Turnpike 55 in its own words; a number beside a fact names the page it comes from. Nothing was copied, and nothing was checked in the game by us.')),
+      h('h2', {}, `Sources · ${sources.length} pages from ${sites} sites, every one dated`),
+      h('p', {}, `Each guide is written for Turnpike 55 in its own words; a number beside a fact names the page it comes from. ${c.cited} of ${c.steps} steps cite a page and ${c.multi} cite two different sites. Nothing was copied, and nothing was checked in the game by us.`)),
     h('table', { class: 'src-table' },
-      h('thead', {}, h('tr', {}, ['#', 'Source', 'Published', 'Read', 'Used for', 'Guides'].map((x) => h('th', { scope: 'col' }, x)))),
+      h('thead', {}, h('tr', {}, ['#', 'Source', 'Published', 'Read', 'Used for', 'Steps', 'Guides'].map((x) => h('th', { scope: 'col' }, x)))),
       h('tbody', {}, sources.map((s) => h('tr', { id: `src-${s.id}` },
         h('td', { class: 'src-no' }, String(s.id)),
         h('td', {}, h('a', { href: s.url, target: '_blank', rel: 'noopener noreferrer' }, h('b', {}, s.site), ` ${s.title}`)),
-        h('td', {}, dateLabel(s.published)),
+        h('td', {}, sourceDate(s)),
         h('td', {}, dateLabel(s.read)),
         h('td', {}, s.used),
+        h('td', { class: 'num' }, String(claimsBacked(trophies, s.id))),
         h('td', { class: 'num' }, `${usage(s.id)}/55`))))),
     h('h3', { class: 'differ-title' }, `Where sources differ · ${differs.length}`),
     h('div', { class: 'differ-grid' }, differs.map((t) => h('div', { class: 'differ' },
@@ -166,6 +175,6 @@ export function renderPrintSheet(el, ctx) {
           h('ol', {}, t.steps.map((s) => h('li', {}, s))));
       }))),
     h('h2', {}, 'Sources'),
-    h('ol', {}, data.sources.map((s) => h('li', {}, `${s.site}, ${s.title}. ${s.url} (published ${dateLabel(s.published)}, read ${dateLabel(s.read)})`))),
+    h('ol', {}, data.sources.map((s) => h('li', {}, `${s.site}, ${s.title}. ${s.url} (${sourceDate(s)}, read ${dateLabel(s.read)})`))),
   );
 }
