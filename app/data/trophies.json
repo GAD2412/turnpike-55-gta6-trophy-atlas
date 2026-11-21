@@ -32,15 +32,34 @@
   { "id": 25, "site": "PowerPyx", "title": "GTA 6 All Shooting Range Gold Medal Challenges", "url": "https://www.powerpyx.com/?p=370622", "published": "2026-11-18", "read": "2026-11-21", "used": "Both ranges, 12 challenges, waiver and rental, Focus gain" },
   { "id": 26, "site": "PowerPyx", "title": "GTA 6 All Illegal Gang Operations Locations", "url": "https://www.powerpyx.com/?p=372652", "published": "2026-11-18", "read": "2026-11-21", "used": "The 9 gangs and their 39 operations, what completes one" },
   { "id": 27, "site": "PowerPyx", "title": "GTA 6 All Collectible Card Sets Locations", "url": "https://www.powerpyx.com/gta-6-all-collectible-card-sets-locations/", "published": "2026-11-18", "read": "2026-11-21", "used": "18 sets, 480 cards, 3 for the trophy, 15 for 100%" },
-  { "id": 28, "site": "PowerPyx", "title": "GTA 6 Collectible Guide - Progress Database", "url": "https://www.powerpyx.com/gta-6-collectible-guide-progress-database/", "published": "2026-11-18", "read": "2026-11-21", "used": "Counts per collectible type (stunts, WAiNK, decks, games)" }
+  { "id": 28, "site": "PowerPyx", "title": "GTA 6 Collectible Guide - Progress Database", "url": "https://www.powerpyx.com/gta-6-collectible-guide-progress-database/", "published": "2026-11-18", "read": "2026-11-21", "used": "Counts per collectible type (stunts, WAiNK, decks, games)" },
+  { "id": 29, "site": "VGC", "title": "GTA 6 Tourist Trap Mission Walkthrough", "url": "https://www.videogameschronicle.com/guide/gta-6-tourist-trap-mission-walkthrough/", "published": "2026-11-18", "read": "2026-11-21", "used": "Tourist Trap starts the final sequence of Chapter 1 and suspends free roam" },
+  { "id": 30, "site": "r/Trophies", "title": "Player report of an Xbox unlock without the balcony scene", "url": "https://www.reddit.com/r/Trophies/comments/1y1kioi/gta_6_meditation_is_not_missable/", "published": "2026-11-21", "read": "2026-11-21", "used": "Firsthand Xbox unlock report, with an achievement image" },
+  { "id": 31, "site": "GTABase", "title": "GTA 6 100% Completion Guide & Interactive Checklist", "url": "https://www.gtabase.com/articles/gta-6/gta-6-100-completion-guide-interactive-checklist", "published": "not shown", "read": "2026-11-21", "used": "Cross-checks the card set, stunt and challenge goals for 100%" }
+ ],
+ "completionGoals": [
+  { "trophy": 30, "label": "Card sets", "target": 15, "available": 18, "sources": "[27][31]" },
+  { "trophy": 15, "label": "Stunts", "target": 300, "available": 397, "sources": "[1][31]" },
+  { "trophy": 32, "label": "Challenges", "target": 70, "available": 80, "sources": "[1][31]" }
+ ],
+ "completionChecklist": [
+  { "label": "Story and jobs", "goals": [
+   "Finish the main story", "Finish 100 optional tasks", "Clear all 39 gang operations", "Finish all 22 bank jobs", "Finish all 7 payday loan jobs", "Finish 34 of 35 smash-and-grabs", "Finish 50 of 91 stickups", "Fence $100,000 in narcotics", "Fence $100,000 in jewelry", "Fence $250,000 in marked bills", "Hit all 8 vaults", "Fence $200,000 in vehicles"
+  ] },
+  { "label": "Exploration and activities", "goals": [
+   "Finish 5 of 7 Kenton sets", "Scan 100 WAiNK locations", "Find all 33 underwater discoveries", "Find 30 of 34 magazines, books and comics", "Complete 15 of 18 meditations", "Destroy 100 of 125 cocaine flamingos", "Complete both playlists", "Discover 70 of 79 styles", "Win 30 of 40 distinct races", "Earn 10 of 13 race-challenge golds", "Earn all 42 shooting-range golds", "Play all 4 video games", "Beat 5 of 7 pool opponents", "Play 2 of 3 mini-golf locations", "Score on 90 of 100 basketball hoops", "Finish all 42 drone time trials", "Finish all 15 of Bret’s target decks"
+  ] },
+  { "label": "Discovery", "goals": [
+   "Scan 200 of 277 base vehicles", "Find 50 of 66 standard weapons", "Study 100 of 255 animals"
+  ] }
  ],
  "legs": [
-  { "id": 1, "name": "Chapter 1", "place": "the Keys", "plan": "Story up to Discharge Time. Do Lucia's balcony meditation before the chapter ends, meet Cal and Kenton, start scanning every car you pass.", "save": "Manual save at the start and end of the chapter; move $5,000 to Family Savings before Tourist Trap [1][12][19]" },
-  { "id": 2, "name": "Chapter 2", "place": "two leads", "plan": "Coffee Break lets both leads roam together: partner crimes, gyms, Billy, Bret, garages, Scooter Bros.", "save": "Save before Checking Out (Move to Vice City) [1][4][19]" },
-  { "id": 3, "name": "Chapter 3", "place": "Vice City", "plan": "Key Cloner, Snap Gun and Dye Pack Jammer open the crime trophies; Race Against Yago early; Randy, Tyrone, Andy, strangers.", "save": "Save before The Cartel Heist [1][4][19]" },
-  { "id": 4, "name": "Chapters 4-5", "place": "finale", "plan": "Play the optional That's Where The Money Is... to open bank vaults, then see the story out.", "save": "Save before the last mission: no replay [1][12][19]" },
-  { "id": 5, "name": "Free roam", "place": "100% list", "plan": "The checklist opens after the credits under Progress > Stats. Ranges, drones, races, stunts, cards, WAiNK, fog, gangs.", "save": "Rotate the spare save slots [1][12]" },
-  { "id": 6, "name": "Clean-up", "place": "oddities", "plan": "One-off stunts and secrets, the last big spend, then the platinum pops.", "save": "" }
+  { "id": 1, "name": "Chapter 1", "place": "the Keys", "plan": "Meditate before Tourist Trap, meet Cal and Kenton, and start logging vehicles. [1][3][29]", "save": "Keep a manual save before Tourist Trap. [1][29]" },
+  { "id": 2, "name": "Chapter 2", "place": "two leads", "plan": "Finish Coffee Break to roam together. Start partner activities and meet Bret and Billy. [1][4]", "save": "Save before Checking Out. [4][19]" },
+  { "id": 3, "name": "Chapter 3", "place": "Vice City", "plan": "Pick up the new crime tools and do Race Against Yago when it appears. [1][19]", "save": "Save before The Cartel Heist. [4][19]" },
+  { "id": 4, "name": "Chapters 4–5", "place": "finale", "plan": "Unlock large vaults with That's Where The Money Is…, then finish the story. [1][4][22]", "save": "Keep a save before the finale. [1][12]" },
+  { "id": 5, "name": "Free roam", "place": "100% list", "plan": "Check Progress › Stats and finish the totals you still need. [2][31]", "save": "" },
+  { "id": 6, "name": "Clean-up", "place": "oddities", "plan": "Finish remaining one-off feats and spending goals. Platinum follows trophy 54. [1]", "save": "" }
  ],
  "trophies": [
   {
@@ -184,7 +203,8 @@
    "steps": [
     "The list only shows after the credits, but earlier progress is kept. [1][2][16]",
     "Needs everything: robberies, all 22 bank jobs, the 39 gang operations, underwater finds, range golds, drone races and Bret's 15 decks. [1][2][20][21]",
-    "Partial targets: 100 optional tasks, 200 of 277 base vehicles, 100 of 255 animals, 300 of 397 stunts, 70 of 80 challenges, 15 of 18 card sets. [2][12][16]",
+    "During the story, log vehicles and study animals as you encounter them. Their 100% targets are 200 of 277 base vehicles and 100 of 255 animals. [1][2]",
+    "After the credits, use the 100% checklist in Progress > Stats to choose what to finish. For cards, stunts and challenges, keep going after the individual trophy pops: 15 sets, 300 stunts and 70 challenges. [1][2][31]",
     "Animals only need studying through binoculars, not hunting. [1][2]",
     "Every item is still open in free roam after the story. [1][2]",
     "eGamers and GTABase call it the hardest trophy on the list. [18][21]"
@@ -343,19 +363,19 @@
   {
    "id": 28, "name": "Positive Mental Attitude", "description": "Meditate at every spot across Leonida.", "grade": "bronze", "hidden": false,
    "kind": "collectible", "leg": 1, "missable": "potentially", "opens": "Chapter 1, balcony", "count": 18, "unit": "meditations",
-   "watch": "Before Chapter 1 ends",
-   "missNote": "The balcony session is gone after Chapter 1; keep a save. [1][3][14][19]",
-   "guide": "18 meditations at 10 spots, each outdoor spot once per lead. Lucia's balcony session comes first and only in Chapter 1 [1][3][14][17][21].",
+   "watch": "Chapter 1 · before Tourist Trap",
+   "deadline": "Before Tourist Trap in Chapter 1 [29]",
+   "missNote": "The scene adds 1 to the counter and disappears after Chapter 1 [3]. One Xbox player reports earning the achievement without it [30].",
+   "guide": "After Coffee Break, take both characters to the marked outdoor spots and swap between them there. The 100% checklist only needs 15 sessions. [2][3]",
    "steps": [
-    "Chapter 1: the morning after Down to Earth, talk to Lucia in the kitchen of Jason's house on Key Lento. [1][3][8][13][14]",
-    "Follow her to the balcony gym, hold L2 on her and choose Accept: the counter goes up by 1. No map marker shows it. [3][8][13][14]",
-    "Spots 2-9 take both leads: Smooth Sand (sandbar off Capri), Buckskin Swamp dock, Worn Stone (Camp Moonflower), Red Rocks (Manifest Canyon), Water Wheel (south Moreau), Jutting Cliff (Mount Kalaga), Waterfall (NW of Tallaloko), Seaside (east of Waning Sands). [3][14][17]",
-    "Ascent Mountain, the stone circle on Mount Kalaga's peak, appears only after all the others. [3][13][17]",
-    "Both leads can use the outdoor spots from Coffee Break in Chapter 2. Track it in Progress > Collections > Exploration > Meditations. [3][13][14]",
-    "The 100% list needs only 15 of 18. [2][3][13][17]",
-    "KeenGamer says each session also raises Focus; eGamers lists no reward but the trophy. [13][17]"
+    "After Down to Earth, try mornings in Jason’s kitchen on Key Lento. Follow Lucia to the balcony, hold L2 and choose Accept. [3]",
+    "Make a manual save before starting Tourist Trap. It leads straight into Home Sweet Home and Discharge Time, with free roam suspended. [1][29]",
+    "From Chapter 2’s Coffee Break, visit the eight marked outdoor stops as both leads. Start at Smooth Sand off Capri, Buckskin Swamp’s dock, Camp Moonflower and Manifest Canyon. [3][14]",
+    "Continue to the ruined mill in south Moreau, the mine overlook on Mount Kalaga, the waterfall northwest of Tallaloko and the rocks east of Waning Sands. [3][14]",
+    "Finish at the stone circle on Mount Kalaga when Ascent Mountain appears. Track sessions in Progress > Collections > Exploration > Meditations. [3][13]",
+    "If you've already skipped the balcony, try the outdoor route with both leads before restarting. One Xbox player reports an unlock this way. [30]"
    ],
-   "differ": { "q": "Does the balcony count?", "a": "Unconfirmed; four guides leave it open. [1][14][17][21]", "b": "Yes: it adds 1 of the 18. [3][19]", "call": "Do it in Chapter 1 anyway." }
+   "differ": { "q": "Can missing the balcony block the PS5 trophy?", "a": "PowerPyx observed +1 on its run and leaves the trophy requirement open. [3]", "b": "An Xbox player reports earning the achievement without the scene. [30]", "call": "Do it if you’re still in Chapter 1. If you’ve moved on, finish the outdoor spots with both leads first." }
   },
   {
    "id": 29, "name": "Fair Game", "description": "Hunt a unique animal for Bret.", "grade": "bronze", "hidden": true,

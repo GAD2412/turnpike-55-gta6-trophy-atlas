@@ -17,9 +17,10 @@ export function sourceById(data, id) {
   return data.sources.find((s) => s.id === id);
 }
 
-export function citeChip(data, id) {
+export function citeChip(data, id, named = false) {
   const s = sourceById(data, id);
-  return h('a', { class: 'cite', href: `#src-${id}`, title: s ? `${s.site}: ${s.title} (${sourceDate(s)}, read ${dateLabel(s.read)})` : `Source ${id}` }, String(id));
+  const label = named && s ? s.site : String(id);
+  return h('a', { class: 'cite', href: `#src-${id}`, title: s ? `${s.site}: ${s.title} (${sourceDate(s)}, read ${dateLabel(s.read)})` : `Source ${id}`, 'aria-label': s ? `Source ${id}, ${s.site}: ${s.title}` : `Source ${id}` }, label);
 }
 
 // "18 Nov 2026", or "updated 20 Nov 2026" for a page that shows only an update date.
@@ -29,12 +30,12 @@ export function sourceDate(s) {
 }
 
 // Text with [n] markers becomes text with source chips; the marker numbers index data.sources.
-export function cited(data, text) {
+export function cited(data, text, named = false) {
   const frag = document.createDocumentFragment();
   let last = 0;
   for (const m of text.matchAll(/\s*\[(\d+)\]/g)) {
     frag.append(text.slice(last, m.index));
-    frag.append(citeChip(data, Number(m[1])));
+    frag.append(citeChip(data, Number(m[1]), named));
     last = m.index + m[0].length;
   }
   frag.append(text.slice(last));
@@ -47,7 +48,7 @@ export function citesIn(text) {
 
 // Every source a trophy's guide leans on, the official list [5] always first.
 export function trophySources(t) {
-  const all = [t.guide, ...t.steps, t.differ ? `${t.differ.a} ${t.differ.b}` : ''].flatMap(citesIn);
+  const all = [t.guide, ...t.steps, t.deadline || '', t.missNote || '', t.differ?.a || '', t.differ?.b || ''].flatMap(citesIn);
   return [5, ...new Set(all.filter((n) => n !== 5))];
 }
 
@@ -61,7 +62,7 @@ export function claimStats(data, trophies) {
   const steps = trophies.flatMap((t) => t.steps);
   return {
     steps: steps.length,
-    cited: steps.filter((s) => citesIn(s).length).length,
+    cited: steps.filter((s) => sitesIn(data, s).size > 0).length,
     multi: steps.filter((s) => sitesIn(data, s).size > 1).length,
   };
 }

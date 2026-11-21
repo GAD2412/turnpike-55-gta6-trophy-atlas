@@ -1,6 +1,6 @@
 [
-  { "file": "1-tracker-guide.jpg", "path": "/#tracker", "note": "13 of 55 earned, counters part way; Positive Mental Attitude open, missable warning beside the sources-differ A/B box, per-step and per-source claim counts", "viewport": { "width": 1280, "height": 800 } },
-  { "file": "2-platinum-route.jpg", "path": "/#route", "note": "all six legs, all 55 trophies placed", "viewport": { "width": 1280, "height": 800 } },
-  { "file": "3-missables.jpg", "path": "/#missables", "note": "missable, watch list, rules, disputed items", "viewport": { "width": 1280, "height": 800 } },
-  { "file": "4-spoiler-filters.jpg", "path": "/#tracker", "note": "Story + Not earned with the spoiler shield on, filter sheet open (F)", "viewport": { "width": 1280, "height": 800 } }
+  { "file": "1-tracker-guide.jpg", "path": "/#tracker", "note": "Checklist and saved progress beside the Positive Mental Attitude guide. The deadline, action and PS5 uncertainty have named sources.", "viewport": { "width": 768, "height": 480 } },
+  { "file": "2-platinum-route.jpg", "path": "/#route", "note": "Six legs and paired trophy and game completion targets for card sets, stunts and challenges.", "viewport": { "width": 1080, "height": 620 } },
+  { "file": "3-missables.jpg", "path": "/#missables", "note": "Chapter 1 save advice and other activities with limited windows.", "viewport": { "width": 850, "height": 540 } },
+  { "file": "4-spoiler-filters.jpg", "path": "/#tracker", "note": "Story and Not earned filters active, with the selected guide hidden by the spoiler shield.", "viewport": { "width": 768, "height": 480 } }
 ]

@@ -1,6 +1,6 @@
-// The open guide: official text, missable warning, counter, cited steps, source disagreements; and its source rail.
-import { h, medal, cited, trophySources, sourceById, dateLabel, money, sourceDate, claimStats, claimsBacked } from './dom.js';
-import { KINDS, isMasked, sortTrophies } from './filters.js';
+// The open guide and the evidence for its steps.
+import { h, medal, cited, citesIn, trophySources, sourceById, dateLabel, money, sourceDate, claimStats } from './dom.js';
+import { KINDS, isMasked } from './filters.js';
 
 function counter(t, ctx) {
   const earned = ctx.progress.earned.includes(t.id);
@@ -17,12 +17,11 @@ function counter(t, ctx) {
     h('span', { class: 'counter-bar' }, h('i', { style: `width:${(n / t.count) * 100}%` })));
 }
 
-function missableBox(t, ctx) {
-  if (t.missable === 'no') return null;
+export function renderDeadline(t, data) {
   return h('div', { class: 'missable', role: 'note' },
-    h('strong', {}, 'Potentially missable'),
-    h('p', { class: 'miss-last' }, `Last chance: ${t.watch}`),
-    h('p', {}, cited(ctx.data, t.missNote)));
+    h('h3', {}, cited(data, t.deadline, true)),
+    h('p', { class: 'deadline-action' }, cited(data, t.steps[0], true)),
+    h('p', { class: 'deadline-evidence' }, h('b', {}, 'PS5 lockout unconfirmed. '), cited(data, t.missNote, true)));
 }
 
 // Both readings side by side with their sources; stacked A over B when it sits beside a missable warning.
@@ -37,25 +36,20 @@ function differBox(t, ctx) {
     h('p', { class: 'differ-call' }, h('b', {}, 'Our call: '), d.call));
 }
 
-function alerts(t, ctx) {
-  const miss = missableBox(t, ctx);
-  if (!miss) return null;
-  return h('div', { class: `alerts${t.differ ? ' has-differ' : ''}` }, miss, differBox(t, ctx));
-}
-
 function stepsHead(t, ctx) {
   const s = claimStats(ctx.data, [t]);
-  return h('h3', { class: 'steps-head' }, 'How to earn it',
-    h('span', {}, `${s.steps} steps · ${s.cited} cited · `, h('b', {}, `${s.multi} on 2+ sites`)));
+  return h('h3', { class: 'steps-head' }, t.deadline ? 'Continue the guide' : 'How to earn it',
+    h('span', {}, `${s.cited}/${s.steps} steps cited`));
 }
 
 function maskedGuide(t, ctx) {
   const leg = ctx.data.legs[t.leg - 1];
+  const label = t.kind === 'story' ? 'Story trophy' : 'Hidden trophy';
   return [
-    h('header', { class: 'g-head' }, medal(t.grade), h('h2', { id: 'guide-title' }, `Story trophy · ${leg.name}`)),
+    h('header', { class: 'g-head' }, medal(t.grade), h('h2', { id: 'guide-title' }, `${label} · ${leg.name}`)),
     h('p', { class: 'g-tags' }, `${t.grade} · ${KINDS[t.kind]} · leg ${t.leg} · #${t.id} of 55 · hidden on PSN`),
     h('div', { class: 'shielded' },
-      h('p', {}, 'The spoiler shield hides this trophy’s name, description and guide until you earn it. It is a story trophy and cannot be missed.'),
+      h('p', {}, 'The spoiler shield hides the name, description and guide until you earn or reveal this trophy.'),
       h('div', { class: 'shielded-actions' },
         h('button', { type: 'button', onclick: () => ctx.reveal(t.id) }, 'Reveal this one'),
         h('button', { type: 'button', onclick: () => ctx.toggle(t.id, true) }, 'Mark earned'))),
@@ -72,49 +66,37 @@ export function renderGuide(el, t, ctx) {
     return;
   }
   const earned = ctx.progress.earned.includes(t.id);
-  const leg = ctx.data.legs[t.leg - 1];
-  el.replaceChildren(
+  const sections = [
     h('header', { class: 'g-head' },
       medal(t.grade),
       h('h2', { id: 'guide-title' }, t.name),
       h('button', { type: 'button', class: `earn${earned ? ' is-on' : ''}`, 'aria-pressed': String(earned), onclick: () => ctx.toggle(t.id, !earned) }, earned ? 'Earned' : 'Mark earned', h('kbd', {}, 'X'))),
     h('p', { class: 'g-tags' },
-      h('span', { class: `g-grade t-${t.grade}` }, t.grade), ` · ${KINDS[t.kind]} · Leg ${t.leg}: ${leg.name}, ${leg.place} · opens ${t.opens}${t.hidden ? ' · hidden on PSN' : ''}`),
-    h('blockquote', { class: 'official' }, h('span', {}, 'Official description'), h('q', {}, t.description), cited(ctx.data, ' [5]')),
-    alerts(t, ctx),
-    h('p', { class: 'g-short' }, h('b', {}, 'In short '), cited(ctx.data, t.guide)),
+      h('span', { class: `g-grade t-${t.grade}` }, t.grade), ` · ${KINDS[t.kind]} · ${t.opens}${t.hidden ? ' · hidden on PSN' : ''}`),
+    h('blockquote', { class: 'official' }, h('q', {}, t.description), cited(ctx.data, ' [5]', true)),
+    t.deadline ? renderDeadline(t, ctx.data) : null,
     t.count ? counter(t, ctx) : null,
     stepsHead(t, ctx),
-    h('ol', { class: 'steps' }, t.steps.map((s) => h('li', {}, h('span', {}, cited(ctx.data, s))))),
-    t.missable === 'no' ? differBox(t, ctx) : null,
-  );
+    h('p', { class: 'g-short' }, cited(ctx.data, t.guide)),
+    h('ol', { class: 'steps', start: t.deadline ? 2 : 1 }, t.steps.slice(t.deadline ? 1 : 0).map((s) => h('li', {}, h('span', {}, cited(ctx.data, s))))),
+    t.deadline ? null : differBox(t, ctx),
+    guideSources(t, ctx.data),
+  ];
+  el.replaceChildren(...sections.filter(Boolean));
 }
 
-function nextUp(ctx) {
-  const open = sortTrophies(ctx.data.trophies.filter((t) => !ctx.progress.earned.includes(t.id) && t.id !== ctx.selected), 'route');
-  return open.slice(0, 4);
-}
-
-export function renderRail(el, t, ctx) {
-  const open = t && !isMasked(t, ctx.progress);
-  // The official list first, then the pages that back the most steps of this guide.
-  const backs = (id) => (open ? claimsBacked([t], id) : 0);
-  const ids = open ? [5, ...trophySources(t).slice(1).sort((a, b) => backs(b) - backs(a) || a - b)] : [5];
-  const sites = new Set(ids.map((id) => sourceById(ctx.data, id).site)).size;
-  const role = (id) => (id === 5 ? 'official text' : backs(id) ? `backs ${backs(id)} of ${t.steps.length} steps` : 'cited in summary or A/B');
-  el.replaceChildren(
-    h('h3', {}, `Sources · ${ids.length} pages, ${sites} sites`),
+function guideSources(t, data) {
+  const ids = trophySources(t);
+  return h('details', { class: 'guide-sources' },
+    h('summary', {}, `Guide sources (${ids.length})`),
     h('ol', { class: 'src-list' }, ids.map((id) => {
-      const s = sourceById(ctx.data, id);
+      const s = sourceById(data, id);
+      const steps = t.steps.flatMap((step, i) => citesIn(step).includes(id) ? [i + 1] : []);
+      const role = id === 5 ? 'Official description' : steps.length ? `Step ${steps.join(', ')}` : 'Guide context';
       return h('li', {},
         h('span', { class: 'src-no' }, String(id)),
         h('a', { href: s.url, target: '_blank', rel: 'noopener noreferrer' }, h('b', {}, s.site), ` ${s.title}`),
-        h('span', { class: 'src-date' }, h('b', { class: 'src-backs' }, role(id)), ` · ${sourceDate(s)} · read ${dateLabel(s.read)}`));
+        h('span', { class: 'src-date' }, h('b', { class: 'src-backs' }, role), ` · ${sourceDate(s)} · read ${dateLabel(s.read)}`));
     })),
-    h('h3', {}, 'Next up on the route'),
-    h('ol', { class: 'next-list' }, nextUp(ctx).map((n) => h('li', {},
-      h('button', { type: 'button', onclick: () => ctx.select(n.id) }, medal(n.grade),
-        h('span', {}, isMasked(n, ctx.progress) ? `Story trophy · ${ctx.data.legs[n.leg - 1].name}` : n.name),
-        h('small', {}, `leg ${n.leg} · ${n.opens}`))))),
   );
 }

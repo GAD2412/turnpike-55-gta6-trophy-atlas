@@ -2,6 +2,7 @@
 import { h, medal, cited, dateLabel, trophySources, sourceDate, claimStats, claimsBacked } from './dom.js';
 import { KINDS, GRADES, FLAGS, SORTS, SPOILER_TEXT, QUICK, isMasked } from './filters.js';
 import { SPOILER_LEVELS } from './store.js';
+import { renderDeadline } from './guide.js';
 
 export function renderOdometer(el, ctx) {
   const { trophies } = ctx.data;
@@ -22,19 +23,14 @@ export function renderAudit(el, ctx) {
   const { trophies, sources } = ctx.data;
   const count = (g) => trophies.filter((t) => t.grade === g).length;
   const c = claimStats(ctx.data, trophies);
-  const reads = [...new Set(sources.map((s) => s.read))].sort();
   const sites = new Set(sources.map((s) => s.site)).size;
   const items = [
-    ['ok', `${trophies.length}/55 official name, text, grade`],
-    ['', `${count('platinum')}P ${count('gold')}G ${count('silver')}S ${count('bronze')}B · ${trophies.filter((t) => t.hidden).length} hidden`],
-    ['ok', `${c.cited}/${c.steps} claims cited`],
-    ['ok', `${c.multi}/${c.steps} on 2+ sites`],
-    ['', `${sources.length} pages · ${sites} sites · read ${dateLabel(reads[0]).split(' ')[0]}-${dateLabel(reads.at(-1))}`],
-    ['warn', `${trophies.filter((t) => t.missable !== 'no').length} potentially missable`],
-    ['diff', `${trophies.filter((t) => t.differ).length} sources differ`],
-    ['', '0 online'],
+    ['', `${trophies.length} trophies · ${trophies.filter((t) => t.hidden).length} hidden on PSN`],
+    ['', `${count('platinum')}P ${count('gold')}G ${count('silver')}S ${count('bronze')}B`],
+    ['ok', `${c.cited}/${c.steps} guide steps cited`],
+    ['', `${sources.length} pages · ${sites} sites`],
   ];
-  el.replaceChildren(h('b', {}, 'Audit'), ...items.map(([k, text]) => h('span', { class: k ? `a-${k}` : '' }, text)));
+  el.replaceChildren(...items.map(([k, text]) => h('span', { class: k ? `a-${k}` : '' }, text)));
 }
 
 const WATCH = [
@@ -57,27 +53,24 @@ const RULES = [
 
 export function renderMissables(el, ctx) {
   const risky = ctx.data.trophies.filter((t) => t.missable !== 'no');
+  const disputes = ctx.data.trophies.filter((t) => t.differ && !isMasked(t, ctx.progress));
   el.replaceChildren(
     h('header', { class: 'route-head' },
-      h('h2', {}, `Missables · ${risky.length} potentially missable, 0 confirmed`),
-      h('p', {}, cited(ctx.data, 'Built from the official descriptions and the guides that played it. Every other trophy stays open in free roam after the story. [1][2][10][12][19]'))),
+      h('h2', {}, 'Missables and save points'),
+      h('p', {}, cited(ctx.data, 'The balcony scene has a chapter deadline. The risk to its PS5 trophy remains open. [3][29][30]', true))),
     h('div', { class: 'miss-grid' },
       h('section', { class: 'miss-main' }, risky.map((t) => h('article', { class: 'miss-card' },
-        h('p', { class: 'miss-when' }, `Leg ${t.leg} · last chance: ${t.watch}`),
         h('h3', {}, medal(t.grade), t.name),
         h('q', {}, t.description),
-        h('ol', { class: 'steps' }, t.steps.slice(0, 2).map((s) => h('li', {}, h('span', {}, cited(ctx.data, s))))),
-        t.differ ? h('div', { class: 'differ' },
-          h('strong', {}, `Sources differ: ${t.differ.q}`),
-          h('p', {}, h('b', {}, 'A '), cited(ctx.data, t.differ.a), ' ', h('b', {}, 'B '), cited(ctx.data, t.differ.b)),
-          h('p', { class: 'differ-call' }, h('b', {}, 'Our call: '), t.differ.call)) : null,
+        renderDeadline(t, ctx.data),
+        h('p', {}, t.differ.call),
         h('button', { type: 'button', onclick: () => ctx.openTrophy(t.id) }, 'Open the full guide'))),
-        h('h3', { class: 'differ-title' }, `Unconfirmed or disputed · ${ctx.data.trophies.filter((t) => t.differ).length}`),
-        h('ul', { class: 'watch' }, ctx.data.trophies.filter((t) => t.differ).map((t) => h('li', {},
-          h('b', {}, isMasked(t, ctx.progress) ? 'Story trophy (shielded)' : t.name), `: ${t.differ.q} `, h('span', { class: 'call' }, t.differ.call), ' ',
+        h('h3', { class: 'differ-title' }, `Unconfirmed or disputed (${disputes.length})`),
+        h('ul', { class: 'watch' }, disputes.map((t) => h('li', {},
+          h('b', {}, t.name), `: ${t.differ.q} `, h('span', { class: 'call' }, t.differ.call), ' ',
           h('button', { type: 'button', class: 'link', onclick: () => ctx.openTrophy(t.id) }, 'Open'))))),
       h('section', { class: 'miss-side' },
-        h('h3', {}, 'Watch list · not missable'),
+        h('h3', {}, 'Other time-sensitive content'),
         h('ul', { class: 'watch' }, WATCH.map(([text, id]) => h('li', {}, cited(ctx.data, text), ' ',
           h('button', { type: 'button', class: 'link', onclick: () => ctx.openTrophy(id) }, 'Open')))),
         h('h3', {}, 'Rules of the road'),
@@ -88,7 +81,7 @@ export function renderMissables(el, ctx) {
 export function renderSources(el, ctx) {
   const { trophies, sources } = ctx.data;
   const usage = (id) => trophies.filter((t) => trophySources(t).includes(id)).length;
-  const differs = trophies.filter((t) => t.differ);
+  const differs = trophies.filter((t) => t.differ && !isMasked(t, ctx.progress));
   const c = claimStats(ctx.data, trophies);
   const sites = new Set(sources.map((s) => s.site)).size;
   el.replaceChildren(
@@ -97,7 +90,7 @@ export function renderSources(el, ctx) {
       h('p', {}, `Each guide is written for Turnpike 55 in its own words; a number beside a fact names the page it comes from. ${c.cited} of ${c.steps} steps cite a page and ${c.multi} cite two different sites. Nothing was copied, and nothing was checked in the game by us.`)),
     h('table', { class: 'src-table' },
       h('thead', {}, h('tr', {}, ['#', 'Source', 'Published', 'Read', 'Used for', 'Steps', 'Guides'].map((x) => h('th', { scope: 'col' }, x)))),
-      h('tbody', {}, sources.map((s) => h('tr', { id: `src-${s.id}` },
+      h('tbody', {}, sources.map((s) => h('tr', { id: `src-${s.id}`, tabindex: -1 },
         h('td', { class: 'src-no' }, String(s.id)),
         h('td', {}, h('a', { href: s.url, target: '_blank', rel: 'noopener noreferrer' }, h('b', {}, s.site), ` ${s.title}`)),
         h('td', {}, sourceDate(s)),
@@ -107,7 +100,7 @@ export function renderSources(el, ctx) {
         h('td', { class: 'num' }, `${usage(s.id)}/55`))))),
     h('h3', { class: 'differ-title' }, `Where sources differ · ${differs.length}`),
     h('div', { class: 'differ-grid' }, differs.map((t) => h('div', { class: 'differ' },
-      h('strong', {}, isMasked(t, ctx.progress) ? `Story trophy (shielded): ${t.differ.q}` : `${t.name}: ${t.differ.q}`),
+      h('strong', {}, `${t.name}: ${t.differ.q}`),
       h('p', {}, h('b', {}, 'A '), cited(ctx.data, t.differ.a)),
       h('p', {}, h('b', {}, 'B '), cited(ctx.data, t.differ.b)),
       h('p', { class: 'differ-call' }, h('b', {}, 'Our call: '), t.differ.call)))),

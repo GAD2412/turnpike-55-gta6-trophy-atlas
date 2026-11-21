@@ -18,13 +18,15 @@
       <p class="tag">GTA VI · PS5 trophy atlas</p>
     </div>
   </div>
-  <div class="odometer" id="odometer" aria-live="polite"></div>
+  <div class="progress-header">
+    <div class="odometer" id="odometer" aria-live="polite"></div>
+    <span class="saved" id="saved" role="status"></span>
+  </div>
   <div class="controls">
     <button type="button" class="spoiler" id="spoiler" aria-pressed="true" title="Spoiler shield (H)"></button>
     <button type="button" id="export" title="Save your progress to a file (E)">Export</button>
     <label class="btn" for="import" title="Load a progress file">Import<input id="import" type="file" accept="application/json,.json"></label>
     <button type="button" id="print" title="Print the whole guide (P)">Print</button>
-    <span class="saved" id="saved" role="status"></span>
   </div>
 </header>
 
@@ -44,14 +46,16 @@
   <section class="view tracker" data-view="tracker">
     <div class="list-pane">
       <div class="list-tools">
-        <label class="search"><span class="sr">Search trophies</span><input id="q" type="search" placeholder="Search name or step" autocomplete="off"><kbd>/</kbd></label>
+        <div class="list-query">
+          <label class="search"><span class="sr">Search trophies</span><input id="q" type="search" placeholder="Search name or step" autocomplete="off"><kbd>/</kbd></label>
+          <button type="button" id="all-filters" class="chip" aria-haspopup="dialog" title="All filters (F)">Filters <kbd>F</kbd></button>
+        </div>
         <div class="quick" id="quick" role="group" aria-label="Quick filters"></div>
         <p class="filter-state" id="filter-state"></p>
       </div>
       <ol class="list" id="list" aria-label="Trophies"></ol>
     </div>
     <article class="guide" id="guide" tabindex="-1" aria-live="polite"></article>
-    <aside class="rail" id="rail"></aside>
   </section>
   <section class="view route" data-view="route" id="route" hidden></section>
   <section class="view missables" data-view="missables" id="missables" hidden></section>
@@ -62,7 +66,7 @@
 <dialog id="help" aria-labelledby="help-title"></dialog>
 <section id="print-sheet" aria-hidden="true"></section>
 
-<footer class="foot">Unofficial fan guide, not affiliated with Rockstar Games or Sony. Trophy names, descriptions and grades as PlayStation publishes them; guides written for Turnpike 55 with their sources. Works offline; progress stays in this browser. Press <kbd>?</kbd> for keys.</footer>
+<footer class="foot">Unofficial PS5 fan guide. Works offline. Press <kbd>?</kbd> for keyboard shortcuts.</footer>
 
 <script type="module" src="js/main.js"></script>
 </body>

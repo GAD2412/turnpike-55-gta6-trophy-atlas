@@ -2,12 +2,13 @@
 import { loadProgress, saveProgress, exportProgress, importProgress, toggleEarned, setCount, SPOILER_LEVELS } from './store.js';
 import { defaultFilter, SPOILER_TEXT } from './filters.js';
 import { renderQuickFilters, renderChecklist, visibleTrophies } from './checklist.js';
-import { renderGuide, renderRail } from './guide.js';
+import { renderGuide } from './guide.js';
 import { renderStrip, renderRoute } from './route.js';
 import { renderOdometer, renderAudit, renderMissables, renderSources, renderFilterDialog, renderHelpDialog, renderPrintSheet } from './panels.js';
 
 const $ = (id) => document.getElementById(id);
 const VIEWS = ['tracker', 'route', 'missables', 'sources'];
+const sourceFragment = () => /^#src-\d+$/.test(location.hash) ? location.hash.slice(1) : null;
 
 async function loadData() {
   const res = await fetch('data/trophies.json');
@@ -20,9 +21,9 @@ function showStatus(text) {
 }
 
 function savedLabel(p) {
-  if (!p.saved) return 'Progress saves in this browser';
+  if (!p.saved) return 'Progress auto-saves locally';
   const d = new Date(p.saved);
-  return `Saved in this browser ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+  return `Saved locally at ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 }
 
 function boot(data) {
@@ -31,20 +32,21 @@ function boot(data) {
     progress: loadProgress(data.trophies),
     filter: defaultFilter(),
     selected: 28,
-    view: VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'tracker',
+    view: sourceFragment() ? 'sources' : VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'tracker',
   };
   const byId = (id) => data.trophies.find((t) => t.id === id);
 
   function commit() {
-    showStatus(saveProgress(ctx.progress) ? savedLabel(ctx.progress) : 'Not saved: this browser blocks storage. Use Export.');
+    const saved = saveProgress(ctx.progress);
+    showStatus(saved ? savedLabel(ctx.progress) : 'Not saved: this browser blocks storage. Use Export.');
     render();
+    return saved;
   }
 
   function renderTracker() {
     renderQuickFilters($('quick'), ctx);
     renderChecklist($('list'), $('filter-state'), ctx);
     renderGuide($('guide'), byId(ctx.selected), ctx);
-    renderRail($('rail'), byId(ctx.selected), ctx);
   }
 
   function render() {
@@ -69,15 +71,26 @@ function boot(data) {
     render();
   }
 
+  function focusSource(id) {
+    const row = $(id);
+    row?.focus({ preventScroll: true });
+    row?.scrollIntoView({ block: 'center' });
+  }
+
   Object.assign(ctx, {
     select(id) {
+      const activeRow = document.activeElement?.closest('.row-main');
       ctx.selected = id;
       render();
-      document.querySelector(`.row[data-id="${id}"]`)?.scrollIntoView({ block: 'nearest' });
+      const row = document.querySelector(`.row[data-id="${id}"]`);
+      if (activeRow) row?.querySelector('.row-main').focus({ preventScroll: true });
+      row?.scrollIntoView({ block: 'nearest' });
+      $('guide').scrollTop = 0;
     },
     openTrophy(id) {
       ctx.selected = id;
       setView('tracker');
+      $('guide').scrollTop = 0;
       $('guide').focus({ preventScroll: true });
       document.querySelector(`.row[data-id="${id}"]`)?.scrollIntoView({ block: 'center' });
     },
@@ -145,8 +158,7 @@ function boot(data) {
     if (!file) return;
     try {
       ctx.progress = await importProgress(file, data.trophies);
-      commit();
-      showStatus(`Imported ${ctx.progress.earned.length} earned trophies from ${file.name}`);
+      if (commit()) showStatus(`Imported ${ctx.progress.earned.length} earned trophies`);
     } catch (err) {
       showStatus(err.message);
     }
@@ -156,7 +168,15 @@ function boot(data) {
     ctx.filter.q = e.target.value;
     renderTracker();
   });
+  $('all-filters').addEventListener('click', ctx.openFilters);
   for (const b of document.querySelectorAll('.tabs [data-view]')) b.addEventListener('click', () => setView(b.dataset.view));
+  window.addEventListener('hashchange', () => {
+    const source = sourceFragment();
+    const view = source ? 'sources' : location.hash.slice(1);
+    ctx.view = VIEWS.includes(view) ? view : 'tracker';
+    render();
+    if (source) focusSource(source);
+  });
   $('filters').addEventListener('close', render);
   window.addEventListener('beforeprint', () => renderPrintSheet($('print-sheet'), ctx));
 
@@ -199,6 +219,7 @@ function boot(data) {
 
   showStatus(savedLabel(ctx.progress));
   render();
+  if (sourceFragment()) focusSource(sourceFragment());
 }
 
 loadData().then(boot).catch((err) => {

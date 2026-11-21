@@ -1,5 +1,5 @@
 // The checklist: quick filter chips and the trophy rows, grouped by route leg when sorted by route.
-import { h, medal, trophySources, money } from './dom.js';
+import { h, medal, money } from './dom.js';
 import { KINDS, QUICK, matches, sortTrophies, quickCount, isMasked, describeFilter } from './filters.js';
 
 export function renderQuickFilters(el, ctx) {
@@ -8,7 +8,6 @@ export function renderQuickFilters(el, ctx) {
     ...QUICK.map(([key, label]) =>
       h('button', { type: 'button', class: `chip${key === 'missable' ? ' chip-missable' : ''}`, 'aria-pressed': String(filter.quick === key), onclick: () => ctx.setQuick(key) },
         label, h('b', {}, String(quickCount(data.trophies, key))))),
-    h('button', { type: 'button', class: 'chip chip-more', onclick: () => ctx.openFilters(), title: 'All filters (F)' }, 'More', h('kbd', {}, 'F')),
   );
 }
 
@@ -29,13 +28,11 @@ function legHead(ctx, leg) {
 
 function rowFlags(t, ctx) {
   const flags = [];
-  if (t.missable !== 'no') flags.push(h('span', { class: 'flag flag-missable' }, 'Missable?'));
+  if (t.missable !== 'no') flags.push(h('span', { class: 'flag flag-missable' }, 'Check deadline'));
   if (t.count) {
     const n = ctx.progress.earned.includes(t.id) ? t.count : ctx.progress.counts[t.id] || 0;
     flags.push(h('span', { class: 'flag flag-count' }, `${money(n, t.unit === '$' ? '$' : '')}/${money(t.count, t.unit === '$' ? '$' : '')}`));
   }
-  if (t.differ) flags.push(h('span', { class: 'flag flag-differ', title: 'Sources differ: both versions shown in the guide' }, 'Differ'));
-  flags.push(h('span', { class: 'flag flag-src', title: 'Sources cited' }, `${trophySources(t).length} src`));
   return h('span', { class: 'row-flags' }, flags);
 }
 
@@ -43,17 +40,18 @@ function row(t, ctx) {
   const earned = ctx.progress.earned.includes(t.id);
   const masked = isMasked(t, ctx.progress);
   const leg = ctx.data.legs[t.leg - 1];
-  const box = h('input', { type: 'checkbox', 'aria-label': `Earned: ${masked ? `hidden story trophy, leg ${t.leg}` : t.name}` });
+  const label = masked ? `${t.kind === 'story' ? 'Story' : 'Hidden'} trophy · ${leg.name}` : t.name;
+  const box = h('input', { type: 'checkbox', 'aria-label': `Earned: ${label}` });
   box.checked = earned;
   box.addEventListener('change', () => ctx.toggle(t.id, box.checked));
-  const name = masked ? h('span', { class: 'row-name' }, `Story trophy · ${leg.name}`) : h('span', { class: 'row-name' }, t.name);
+  const name = h('span', { class: 'row-name' }, label);
   const desc = masked ? 'Hidden by the spoiler shield until earned' : t.description;
   return h('li', { class: `row${earned ? ' is-earned' : ''}${masked ? ' is-masked' : ''}${t.id === ctx.selected ? ' is-selected' : ''}`, dataset: { id: t.id } },
     box,
     h('button', { type: 'button', class: 'row-main', onclick: () => ctx.select(t.id), 'aria-current': t.id === ctx.selected ? 'true' : false },
       medal(t.grade), name,
       h('span', { class: 'row-desc' }, desc),
-      h('span', { class: 'row-meta' }, h('b', { class: `t-${t.grade}` }, t.grade), ` · ${KINDS[t.kind]}${t.hidden ? ' · hidden on PSN' : ''}${t.count ? ` · PSN counts ${t.count.toLocaleString('en-US')}` : ''}`)),
+      h('span', { class: 'row-meta' }, h('b', { class: `t-${t.grade}` }, t.grade), ` · ${KINDS[t.kind]}`)),
     rowFlags(t, ctx));
 }
 
